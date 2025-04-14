@@ -20,16 +20,16 @@ CREATE TABLE categories (
 -- Tạo bảng expenses (lưu giao dịch chi tiêu)
 CREATE TABLE expenses (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    amount DECIMAL(10, 2) NOT NULL,
+    amount double NOT NULL,
     description TEXT,
     category_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at Date,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 );
 
 -- Chèn dữ liệu mẫu
 -- Dữ liệu cho bảng managers
-INSERT INTO user (username, password) VALUES ('admin', 'password123');
+INSERT INTO user (username, password) VALUES ('admin', 'admin');
 
 -- Dữ liệu cho bảng categories
 INSERT INTO categories (name) VALUES ('Food');
