@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+//http://localhost:8080/kieutrangshop/api/login?username=admin&password=admin
 @WebServlet("/api/login")
 public class LoginServlet extends HttpServlet {
     private UserService userService;
