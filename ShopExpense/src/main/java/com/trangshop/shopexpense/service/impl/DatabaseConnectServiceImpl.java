@@ -8,12 +8,13 @@ import java.sql.SQLException;
 
 public class DatabaseConnectServiceImpl implements DatabaseConnectService {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/";
+    private static final String URL = "jdbc:mysql://localhost:3306/shopexpense";
     private static final String USER = "root";
-    private static final String PASSWORD = "";
+    private static final String PASSWORD = "mysqlcuatai123*";
 
     //kết nối database bằng jdbc
-    private Connection getConnection() {
+    @Override
+    public Connection getConnection() {
         try{
             return DriverManager.getConnection(URL, USER, PASSWORD);
         }catch (SQLException e){
