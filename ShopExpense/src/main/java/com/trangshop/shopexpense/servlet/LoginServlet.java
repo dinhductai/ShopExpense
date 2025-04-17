@@ -14,7 +14,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-//http://localhost:8080/kieutrangshop/login?username=admin&password=admin
+//POST   http://localhost:8080/kieutrangshop/login?username=admin&password=admin
+//api đăng nhập với username và password
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     private UserService userService;

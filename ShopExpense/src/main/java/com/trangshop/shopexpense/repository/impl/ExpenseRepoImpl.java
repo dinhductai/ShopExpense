@@ -1,6 +1,7 @@
 package com.trangshop.shopexpense.repository.impl;
 
 import com.mysql.cj.jdbc.ConnectionWrapper;
+import com.trangshop.shopexpense.exception.ExpenseException;
 import com.trangshop.shopexpense.model.Expense;
 import com.trangshop.shopexpense.repository.ExpenseRepo;
 import com.trangshop.shopexpense.service.DatabaseConnectService;
@@ -22,7 +23,9 @@ public class ExpenseRepoImpl implements ExpenseRepo {
 
     @Override
     public List<Expense> findAll(int page,int size) {
+
         String sql = "select * from expenses limit ? offset ?";
+
         List<Expense> expenses =  new ArrayList<>();
         int offSet = (page - 1) * size; //offset 0 - page thứ 1 với size là 10,lấy từ bản ghi thứ 1
         try(Connection conn = databaseConnectService.getConnection();
@@ -46,15 +49,13 @@ public class ExpenseRepoImpl implements ExpenseRepo {
                     expense.setCreatedAt(rs.getDate("created_at"));
                     expenses.add(expense);
                 }
-            }catch (SQLException e) {
-                System.out.println("SQLException in ExpenseRepoImpl: " + e.getMessage());
-                e.printStackTrace();
             }
-
-        }catch (Exception e){
-            System.out.println("Exception in ExpenseRepoImpl: " + e.getMessage());
-            e.printStackTrace();
+        } catch (SQLException e) {
+                throw new ExpenseException("Database error while retrieving expenses: " + e.getMessage(), e);
+        } catch (Exception e) {
+                throw new ExpenseException("Unexpected error while retrieving expenses: " + e.getMessage(), e);
         }
+
         return expenses;
     }
 }

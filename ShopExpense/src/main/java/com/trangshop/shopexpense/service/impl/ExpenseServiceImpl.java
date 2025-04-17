@@ -1,5 +1,6 @@
 package com.trangshop.shopexpense.service.impl;
 
+import com.trangshop.shopexpense.exception.ExpenseException;
 import com.trangshop.shopexpense.model.Expense;
 import com.trangshop.shopexpense.repository.ExpenseRepo;
 import com.trangshop.shopexpense.repository.impl.ExpenseRepoImpl;
@@ -15,6 +16,19 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
     @Override
     public List<Expense> getAllExpenses(int page,int size) {
-        return expenseRepo.findAll(page,size);
+
+        try {
+            List<Expense> expenses = expenseRepo.findAll(page, size);
+            if (expenses.isEmpty()) {
+                throw new ExpenseException("No expenses found for page=" + page + ", size=" + size);
+            }
+            return expenses;
+        } catch (ExpenseException e) {
+            throw e; //ném lại exception từ repository
+        } catch (Exception e) {
+            throw new ExpenseException("Error retrieving expenses: " + e.getMessage(), e);
+        }
     }
+
+
 }
