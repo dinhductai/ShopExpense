@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ExpenseService {
     List<Expense> getAllExpenses(int page,int size);
-
+    Expense createExpense(Expense expense);
 }

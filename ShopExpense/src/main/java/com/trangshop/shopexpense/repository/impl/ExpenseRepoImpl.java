@@ -58,4 +58,48 @@ public class ExpenseRepoImpl implements ExpenseRepo {
 
         return expenses;
     }
+
+    @Override
+    public Expense create(Expense expense) {
+        String sql = "insert into expenses (amount, description, expense_date, payment_method, location, " +
+                "note, category_id, user_id, created_at) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = databaseConnectService.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            pstmt.setDouble(1, expense.getAmount());
+            pstmt.setString(2, expense.getDescription());
+            pstmt.setDate(3, expense.getExpenseDate()
+                    != null ? new java.sql.Date(expense.getExpenseDate().getTime()) : null);
+            pstmt.setString(4, expense.getPaymentMethod());
+            pstmt.setString(5, expense.getLocation());
+            pstmt.setString(6, expense.getNote());
+            pstmt.setInt(7, expense.getCategoryId());
+            pstmt.setInt(8, expense.getUserId());
+            pstmt.setDate(9, expense.getCreatedAt()
+                    != null ? new java.sql.Date(expense.getCreatedAt().getTime())
+                    : new java.sql.Date(System.currentTimeMillis()));
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new ExpenseException("Failed to create expense");
+            }
+
+            // Lấy ID được sinh tự động
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    expense.setId(rs.getInt(1));
+                } else {
+                    throw new ExpenseException("Failed to retrieve generated ID for expense");
+                }
+            }
+            System.out.println("Inserted expense with ID: " + expense.getId());
+            return expense;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            throw new ExpenseException("Database error while creating expense: " + e.getMessage(), e);
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+            throw new ExpenseException("Unexpected error while creating expense: " + e.getMessage(), e);
+        }
+    }
 }

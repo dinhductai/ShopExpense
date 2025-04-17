@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -80,6 +81,33 @@ public class ExpenseServlet extends HttpServlet {
         }
     }
 
-    
+    // POST: Thêm chi tiêu mới
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        try {
+            // Đọc JSON từ request body
+            BufferedReader reader = req.getReader();
+            Expense expense = gson.fromJson(reader, Expense.class);
+            System.out.println("Received expense: " + gson.toJson(expense));
+
+            // Gọi service để thêm chi tiêu
+            Expense createdExpense = expenseService.createExpense(expense);
+
+            // Trả về chi tiêu đã tạo
+            resp.setStatus(HttpServletResponse.SC_CREATED); // HTTP 201
+            resp.getWriter().write(gson.toJson(createdExpense));
+        } catch (ExpenseException e) {
+            System.out.println("Service error: " + e.getMessage());
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // HTTP 400 cho lỗi nghiệp vụ
+            resp.getWriter().write(gson.toJson("Error: " + e.getMessage()));
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // HTTP 500
+            resp.getWriter().write(gson.toJson("Unexpected error"));
+        }
+    }
 
 }
