@@ -2,6 +2,7 @@ package com.trangshop.shopexpense.repository.impl;
 
 import com.mysql.cj.jdbc.ConnectionWrapper;
 import com.trangshop.shopexpense.exception.ExpenseException;
+import com.trangshop.shopexpense.mapper.ExpenseMapper;
 import com.trangshop.shopexpense.model.Expense;
 import com.trangshop.shopexpense.repository.ExpenseRepo;
 import com.trangshop.shopexpense.service.DatabaseConnectService;
@@ -17,9 +18,10 @@ import java.util.List;
 
 public class ExpenseRepoImpl implements ExpenseRepo {
     private DatabaseConnectService databaseConnectService;
-
+    private ExpenseMapper expenseMapper;
     public ExpenseRepoImpl() {
         this.databaseConnectService =  new DatabaseConnectServiceImpl();
+        this.expenseMapper = new ExpenseMapper();
     }
 
     @Override
@@ -37,18 +39,7 @@ public class ExpenseRepoImpl implements ExpenseRepo {
             try(ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     Expense expense = new Expense();
-                    //thứ tự set dữ liệu phải đúng với thứ tự dl được lấy ra tại rs
-                    expense.setId(rs.getInt("id"));
-                    expense.setAmount(rs.getDouble("amount"));
-                    expense.setDescription(rs.getString("description"));
-                    expense.setExpenseDate(rs.getDate("expense_date"));
-                    expense.setPaymentMethod(rs.getString("payment_method"));
-                    expense.setLocation(rs.getString("location"));
-                    expense.setNote(rs.getString("note"));
-                    expense.setCategoryId(rs.getInt("category_id"));
-                    expense.setUserId(rs.getInt("user_id"));
-                    expense.setCreatedAt(rs.getDate("created_at"));
-                    expenses.add(expense);
+                    expenses.add(expenseMapper.toExpense(expense,rs));
                 }
             }
         } catch (SQLException e) {
@@ -59,6 +50,24 @@ public class ExpenseRepoImpl implements ExpenseRepo {
 
         return expenses;
     }
+
+    @Override
+    public Expense findById(int id) {
+        String sql = "select * " +
+                "FROM expenses WHERE id = ?";
+        try (Connection conn = databaseConnectService.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Expense expense = new Expense();
+                return expenseMapper.toExpense(expense,rs);
+            }
+            return null; // Service sẽ xử lý trường hợp không tìm thấy
+        } catch (SQLException e) {
+            System.out.println("Database error retrieving expense: " + e.getMessage());
+            throw new ExpenseException("Error retrieving expense: " + e.getMessage());
+        }    }
 
     @Override
     public Expense create(Expense expense) {

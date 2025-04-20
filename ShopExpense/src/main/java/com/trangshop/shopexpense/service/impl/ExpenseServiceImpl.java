@@ -32,7 +32,20 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public Expense getExpenseById(int id) {
-        return null;
+        if (id <= 0) {
+            throw new ExpenseException("Invalid expense ID: ID must be positive");
+        }
+        try {
+            Expense expense = expenseRepo.findById(id);
+            if (expense == null) {
+                throw new ExpenseException("Expense with ID " + id + " not found");
+            }
+            System.out.println("Retrieved expense with ID: " + id);
+            return expense;
+        } catch (Exception e) {
+            System.out.println("Error retrieving expense: " + e.getMessage());
+            throw new ExpenseException("Failed to retrieve expense: " + e.getMessage());
+        }
     }
 
     @Override

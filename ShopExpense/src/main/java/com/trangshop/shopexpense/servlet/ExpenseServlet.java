@@ -48,33 +48,43 @@ public class ExpenseServlet extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
 
         try {
-            // đọc tham số phân trang từ query
-            //set mặc định trước,nếu api truyền về ko có page size,thì mặc định lấy 10 raw expense đầu tiên
-            int page = 1;
-            int size = 10;
+            String pathInfo = req.getPathInfo();
+            if (pathInfo != null && pathInfo.length() > 1) {
+                // Xử lý GET /expenses/{id}
+                String expenseId = pathInfo.substring(1);
+                int id = Integer.parseInt(expenseId); // Service sẽ xử lý lỗi ID
+                Expense expense = expenseService.getExpenseById(id);
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().write(gson.toJson(expense));
+            } else {
+                // đọc tham số phân trang từ query
+                //set mặc định trước,nếu api truyền về ko có page size,thì mặc định lấy 10 raw expense đầu tiên
+                int page = 1;
+                int size = 10;
 
-            //lấy và xử lý tham số, set mặc định nếu không hợp lệ
-            try {
-                if (req.getParameter("page") != null) {
-                    page = Integer.parseInt(req.getParameter("page"));
-                    if (page < 1) page = 1; // Set mặc định nếu page < 1
+                //lấy và xử lý tham số, set mặc định nếu không hợp lệ
+                try {
+                    if (req.getParameter("page") != null) {
+                        page = Integer.parseInt(req.getParameter("page"));
+                        if (page < 1) page = 1; // Set mặc định nếu page < 1
+                    }
+                    if (req.getParameter("size") != null) {
+                        size = Integer.parseInt(req.getParameter("size"));
+                        if (size < 1) size = 10; // Set mặc định nếu size < 1
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid page or size parameter, using defaults: page=1, size=10");
+                    page = 1;
+                    size = 10;
                 }
-                if (req.getParameter("size") != null) {
-                    size = Integer.parseInt(req.getParameter("size"));
-                    if (size < 1) size = 10; // Set mặc định nếu size < 1
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid page or size parameter, using defaults: page=1, size=10");
-                page = 1;
-                size = 10;
+                // gọi service lấy danh sách phân trang
+                List<Expense> expenses = expenseService.getAllExpenses(page, size);
+
+                //set status cho response status code  cs_ok = 200
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter() //ghi chuỗi json vào servlet response
+                        .write(gson.toJson(expenses)); //chuyển list expense thành chuỗi dạng json
             }
-            // gọi service lấy danh sách phân trang
-            List<Expense> expenses = expenseService.getAllExpenses(page, size);
-
-            //set status cho response status code  cs_ok = 200
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getWriter() //ghi chuỗi json vào servlet response
-                    .write(gson.toJson(expenses)); //chuyển list expense thành chuỗi dạng json
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().write(gson.toJson("Error retrieving expenses: " + e.getMessage()));
@@ -171,6 +181,7 @@ public class ExpenseServlet extends HttpServlet {
         }
 
     }
+
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
