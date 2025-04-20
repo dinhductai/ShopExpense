@@ -5,6 +5,7 @@ import com.trangshop.shopexpense.exception.ExpenseException;
 import com.trangshop.shopexpense.mapper.ExpenseMapper;
 import com.trangshop.shopexpense.model.Expense;
 import com.trangshop.shopexpense.repository.ExpenseRepo;
+import com.trangshop.shopexpense.repository.query.ExpenseQuery;
 import com.trangshop.shopexpense.service.DatabaseConnectService;
 import com.trangshop.shopexpense.service.impl.DatabaseConnectServiceImpl;
 
@@ -19,20 +20,19 @@ import java.util.List;
 public class ExpenseRepoImpl implements ExpenseRepo {
     private DatabaseConnectService databaseConnectService;
     private ExpenseMapper expenseMapper;
+    private ExpenseQuery expenseQuery;
     public ExpenseRepoImpl() {
         this.databaseConnectService =  new DatabaseConnectServiceImpl();
         this.expenseMapper = new ExpenseMapper();
+        this.expenseQuery = new ExpenseQuery();
     }
 
     @Override
     public List<Expense> findAll(int page,int size) {
-
-        String sql = "select * from expenses limit ? offset ?";
-
         List<Expense> expenses =  new ArrayList<>();
         int offSet = (page - 1) * size; //offset 0 - page thứ 1 với size là 10,lấy từ bản ghi thứ 1
         try(Connection conn = databaseConnectService.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+            PreparedStatement pstmt = conn.prepareStatement(expenseQuery.FIND_ALL_EXPENSE);
             ){
             pstmt.setInt(1,size); //limit số lượng expense trên mỗi lần load dữ liệu, 10 20 30
             pstmt.setInt(2,offSet); //page đang đứng là bao nhiêu, 1 2 3 4 ...
@@ -47,16 +47,13 @@ public class ExpenseRepoImpl implements ExpenseRepo {
         } catch (Exception e) {
                 throw new ExpenseException("Unexpected error while retrieving expenses: " + e.getMessage(), e);
         }
-
         return expenses;
     }
 
     @Override
     public Expense findById(int id) {
-        String sql = "select * " +
-                "FROM expenses WHERE id = ?";
         try (Connection conn = databaseConnectService.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(expenseQuery.FIND_ONE_EXPENSE)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -71,11 +68,10 @@ public class ExpenseRepoImpl implements ExpenseRepo {
 
     @Override
     public Expense create(Expense expense) {
-        String sql = "insert into expenses (amount, description, expense_date, payment_method, location, " +
-                "note, category_id, user_id, created_at) " +
-                "values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = databaseConnectService.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+             //PreparedStatement.RETURN_GENERATED_KEYS dùng để
+             //yêu cầu cơ sở dữ liệu trả về giá trị khóa chính tự động tăng (khóa chinh của expense vừa đc tạo)
+             PreparedStatement pstmt = conn.prepareStatement(expenseQuery.CREATE_EXPENSE, PreparedStatement.RETURN_GENERATED_KEYS)) {
             pstmt.setDouble(1, expense.getAmount());
             pstmt.setString(2, expense.getDescription());
             pstmt.setDate(3, expense.getExpenseDate()
@@ -115,10 +111,8 @@ public class ExpenseRepoImpl implements ExpenseRepo {
 
     @Override
     public Expense update(Expense expenseUpdate) {
-        String sql = "UPDATE expenses SET user_id = ?, category_id = ?, amount = ?, description = ?, expense_date = ?, " +
-                "payment_method = ?, location = ?, note = ? WHERE id = ?";
         try (Connection conn = databaseConnectService.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(expenseQuery.UPDATE_EXPENSE)) {
             stmt.setInt(1, expenseUpdate.getUserId());
             stmt.setInt(2, expenseUpdate.getCategoryId());
             stmt.setDouble(3, expenseUpdate.getAmount());
@@ -140,9 +134,8 @@ public class ExpenseRepoImpl implements ExpenseRepo {
 
     @Override
     public void delete(int idExpense) {
-        String sql = "DELETE FROM expenses WHERE id = ?";
         try (Connection conn = databaseConnectService.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(expenseQuery.DELETE_EXPENSE)) {
             stmt.setInt(1, idExpense);
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected == 0) {
