@@ -20,7 +20,7 @@ import static com.mysql.cj.conf.PropertyKey.logger;
 
 //url test:  Http method:Get  http://localhost:8080/kieutrangshop/expenses?page=2&size=10
 //api lấy tất cả expense, có hỗ trợ phân trang với page size đc truyền từ fe
-@WebServlet("/expenses")
+@WebServlet("/expenses/*")
 public class ExpenseServlet extends HttpServlet {
     private ExpenseService expenseService;
     private Gson gson; //thư viện Gson của google, config dependency ở file pom,
@@ -81,22 +81,26 @@ public class ExpenseServlet extends HttpServlet {
         }
     }
 
-    // POST: Thêm chi tiêu mới
+    // get api method
+    // thêm chi tiêu mới /expenses
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
         try {
-            // Đọc JSON từ request body
+            //đọc JSON từ request body
+            //req.getReader() sẽ trả về BufferedReader dạng một luồng văn bản
             BufferedReader reader = req.getReader();
-            Expense expense = gson.fromJson(reader, Expense.class);
-            System.out.println("Received expense: " + gson.toJson(expense));
+//            chuyển đổi (deserialize) dữ liệu JSON từ BufferedReader thành một đối tượng Java, ở đây là Expense
+            Expense expenseUpdate = gson.fromJson(reader, Expense.class);
+//            System.out.println("Received expense: " + gson.toJson(expenseUpdate));
 
-            // Gọi service để thêm chi tiêu
-            Expense createdExpense = expenseService.createExpense(expense);
+            // gọi service để thêm chi tiêu
+            Expense createdExpense = expenseService.createExpense(expenseUpdate);
 
-            // Trả về chi tiêu đã tạo
+            //trả về chi tiêu đã tạo
             resp.setStatus(HttpServletResponse.SC_CREATED); // HTTP 201
             resp.getWriter().write(gson.toJson(createdExpense));
         } catch (ExpenseException e) {
@@ -108,6 +112,64 @@ public class ExpenseServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // HTTP 500
             resp.getWriter().write(gson.toJson("Unexpected error"));
         }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        try {
+            // Lấy ID từ URL (ví dụ: /expenses/1 -> "1")
+            String pathInfo = req.getPathInfo();
+            if (pathInfo == null || pathInfo.length() <= 1) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write(gson.toJson("Error: Missing expense ID"));
+                return;
+            }
+            String expenseId = pathInfo.substring(1); // Bỏ dấu "/" đầu tiên
+            int id;
+            try {
+                id = Integer.parseInt(expenseId);
+                if (id < 1) {
+                    throw new NumberFormatException("Invalid ID");
+                }
+            } catch (NumberFormatException e) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write(gson.toJson("Error: Invalid expense ID"));
+                return;
+            }
+
+            // Đọc JSON từ request body
+            BufferedReader reader = req.getReader();
+            Expense expenseUpdate = gson.fromJson(reader, Expense.class);
+            // Gán ID từ URL vào expenseUpdate
+            expenseUpdate.setId(id);
+
+            // Validate dữ liệu đầu vào
+            if (expenseUpdate.getAmount() <= 0 || expenseUpdate.getCategoryId() <= 0) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write(gson.toJson("Error: Invalid amount or category"));
+                return;
+            }
+
+            // Gọi service để cập nhật chi tiêu
+            Expense updatedExpense = expenseService.updateExpense(expenseUpdate);
+
+            // Trả về chi tiêu đã cập nhật
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.getWriter().write(gson.toJson(updatedExpense));
+        } catch (ExpenseException e) {
+            System.out.println("Service error: " + e.getMessage());
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write(gson.toJson("Error: " + e.getMessage()));
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write(gson.toJson("Unexpected error"));
+        }
+
     }
 
 }

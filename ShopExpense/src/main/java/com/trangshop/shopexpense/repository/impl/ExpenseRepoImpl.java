@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ExpenseRepoImpl implements ExpenseRepo {
@@ -100,6 +101,31 @@ public class ExpenseRepoImpl implements ExpenseRepo {
         } catch (Exception e) {
             System.out.println("Unexpected error: " + e.getMessage());
             throw new ExpenseException("Unexpected error while creating expense: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Expense update(Expense expenseUpdate) {
+        String sql = "UPDATE expenses SET user_id = ?, category_id = ?, amount = ?, description = ?, expense_date = ?, " +
+                "payment_method = ?, location = ?, note = ? WHERE id = ?";
+        try (Connection conn = databaseConnectService.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, expenseUpdate.getUserId());
+            stmt.setInt(2, expenseUpdate.getCategoryId());
+            stmt.setDouble(3, expenseUpdate.getAmount());
+            stmt.setString(4, expenseUpdate.getDescription());
+            stmt.setDate(5, expenseUpdate.getExpenseDate());
+            stmt.setString(6, expenseUpdate.getPaymentMethod());
+            stmt.setString(7, expenseUpdate.getLocation());
+            stmt.setString(8, expenseUpdate.getNote());
+            stmt.setInt(9, expenseUpdate.getId());
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new ExpenseException("Expense with ID " + expenseUpdate.getId() + " not found");
+            }
+            return expenseUpdate;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }

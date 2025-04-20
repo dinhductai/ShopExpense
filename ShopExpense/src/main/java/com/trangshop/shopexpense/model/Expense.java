@@ -1,6 +1,6 @@
 package com.trangshop.shopexpense.model;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Expense {
     private Integer id;

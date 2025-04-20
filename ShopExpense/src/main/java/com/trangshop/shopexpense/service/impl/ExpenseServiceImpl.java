@@ -31,33 +31,51 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public Expense createExpense(Expense expense) {
+    public Expense createExpense(Expense newExpense) {
         try {
             // Kiểm tra dữ liệu đầu vào
-            if (expense == null) {
+            if (newExpense == null) {
                 throw new ExpenseException("Expense cannot be null");
             }
-            if (expense.getAmount() <= 0) {
+            if (newExpense.getAmount() <= 0) {
                 throw new ExpenseException("Amount must be greater than 0");
             }
-            if (expense.getDescription() == null || expense.getDescription().trim().isEmpty()) {
+            if (newExpense.getDescription() == null || newExpense.getDescription().trim().isEmpty()) {
                 throw new ExpenseException("Description cannot be empty");
             }
-            if (expense.getCategoryId() <= 0) {
+            if (newExpense.getCategoryId() <= 0) {
                 throw new ExpenseException("Invalid category ID");
             }
-            if (expense.getUserId() <= 0) {
+            if (newExpense.getUserId() <= 0) {
                 throw new ExpenseException("Invalid user ID");
             }
 
             // Gọi repository để thêm chi tiêu
-            Expense createdExpense = expenseRepo.create(expense);
+            Expense createdExpense = expenseRepo.create(newExpense);
             System.out.println("Created expense with ID: " + createdExpense.getId());
             return createdExpense;
         } catch (Exception e) {
             System.out.println("Error creating expense: " + e.getMessage());
             throw new ExpenseException("Error creating expense: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public Expense updateExpense(Expense expenseUpdate) {
+        if (expenseUpdate == null || expenseUpdate.getId() <= 0) {
+            throw new ExpenseException("Invalid expense ID");
+        }
+        if (expenseUpdate.getAmount() <= 0 || expenseUpdate.getCategoryId() <= 0) {
+            throw new ExpenseException("Invalid amount or category");
+        }
+        if (expenseUpdate.getExpenseDate() == null) {
+            throw new ExpenseException("Expense date is required");
+        }
+        // Validate các trường mới
+        if (expenseUpdate.getPaymentMethod() == null || expenseUpdate.getPaymentMethod().trim().isEmpty()) {
+            throw new ExpenseException("Payment method is required");
+        }
+        return expenseRepo.update(expenseUpdate);
     }
 
 
