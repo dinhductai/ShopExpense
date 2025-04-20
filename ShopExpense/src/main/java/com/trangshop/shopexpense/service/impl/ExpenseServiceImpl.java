@@ -31,6 +31,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
+    public Expense getExpenseById(int id) {
+        return null;
+    }
+
+    @Override
     public Expense createExpense(Expense newExpense) {
         try {
             // Kiểm tra dữ liệu đầu vào
@@ -76,6 +81,22 @@ public class ExpenseServiceImpl implements ExpenseService {
             throw new ExpenseException("Payment method is required");
         }
         return expenseRepo.update(expenseUpdate);
+    }
+
+    @Override
+    public void deleteExpense(int idExpense) {
+    // Kiểm tra ID hợp lệ
+        if (idExpense <= 0) {
+            throw new ExpenseException("Invalid expense ID: ID must be positive");
+        }
+        try {
+            // Gọi repository để xóa
+            expenseRepo.delete(idExpense);
+        } catch (ExpenseException e) {
+            // Lỗi từ repository (như không tìm thấy chi tiêu)
+            System.out.println("Error deleting expense: " + e.getMessage());
+            throw e; // Ném lại để Servlet xử lý status code
+        }
     }
 
 

@@ -172,4 +172,30 @@ public class ExpenseServlet extends HttpServlet {
 
     }
 
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        try {
+            // Lấy ID từ URL
+            String pathInfo = req.getPathInfo();
+            String expenseId = pathInfo.substring(1);
+            int id = Integer.parseInt(expenseId); // Service sẽ xử lý lỗi ID không hợp lệ
+
+            // Gọi service để xóa chi tiêu
+            expenseService.deleteExpense(id);
+            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        } catch (ExpenseException e) {
+            System.out.println("Service error: " + e.getMessage());
+            resp.setStatus(e.getMessage().contains("not found") ?
+                    HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write(gson.toJson("Error: " + e.getMessage()));
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write(gson.toJson("Unexpected error"));
+        }
+    }
 }

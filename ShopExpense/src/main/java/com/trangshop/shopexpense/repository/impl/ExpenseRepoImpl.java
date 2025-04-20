@@ -128,4 +128,19 @@ public class ExpenseRepoImpl implements ExpenseRepo {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void delete(int idExpense) {
+        String sql = "DELETE FROM expenses WHERE id = ?";
+        try (Connection conn = databaseConnectService.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idExpense);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new ExpenseException("Expense with ID " + idExpense + " not found");
+            }
+        } catch (SQLException e) {
+            throw new ExpenseException("Error deleting expense: " + e.getMessage());
+        }
+    }
 }
