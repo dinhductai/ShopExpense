@@ -16,34 +16,30 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
     @Override
     public List<Expense> getAllExpenses(int page,int size) {
-
         try {
             List<Expense> expenses = expenseRepo.findAll(page, size);
             if (expenses.isEmpty()) {
                 throw new ExpenseException("No expenses found for page=" + page + ", size=" + size);
             }
             return expenses;
-        } catch (ExpenseException e) {
-            throw e; //ném lại exception từ repository
         } catch (Exception e) {
-            throw new ExpenseException("Error retrieving expenses: " + e.getMessage(), e);
+            throw new ExpenseException("Error retrieving expenses: " + e.getMessage());
         }
     }
 
     @Override
     public Expense getExpenseById(int id) {
         if (id <= 0) {
-            throw new ExpenseException("Invalid expense ID: ID must be positive");
+            throw new ExpenseException("Invalid expense ID: ID must be positive ");
         }
         try {
             Expense expense = expenseRepo.findById(id);
             if (expense == null) {
-                throw new ExpenseException("Expense with ID " + id + " not found");
+                throw new ExpenseException("Expense with ID " + id + " not found ");
             }
             System.out.println("Retrieved expense with ID: " + id);
             return expense;
         } catch (Exception e) {
-            System.out.println("Error retrieving expense: " + e.getMessage());
             throw new ExpenseException("Failed to retrieve expense: " + e.getMessage());
         }
     }
@@ -51,7 +47,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public Expense createExpense(Expense newExpense) {
         try {
-            // Kiểm tra dữ liệu đầu vào
+            //kiểm tra dữ liệu đầu vào
             if (newExpense == null) {
                 throw new ExpenseException("Expense cannot be null");
             }
@@ -67,19 +63,16 @@ public class ExpenseServiceImpl implements ExpenseService {
             if (newExpense.getUserId() <= 0) {
                 throw new ExpenseException("Invalid user ID");
             }
-
-            // Gọi repository để thêm chi tiêu
-            Expense createdExpense = expenseRepo.create(newExpense);
-            System.out.println("Created expense with ID: " + createdExpense.getId());
-            return createdExpense;
+            // gọi repository để thêm chi tiêu
+            return expenseRepo.create(newExpense);
         } catch (Exception e) {
-            System.out.println("Error creating expense: " + e.getMessage());
-            throw new ExpenseException("Error creating expense: " + e.getMessage(), e);
+            throw new ExpenseException("Error creating expense: " + e.getMessage());
         }
     }
 
     @Override
     public Expense updateExpense(Expense expenseUpdate) {
+        // validate các trường mới
         if (expenseUpdate == null || expenseUpdate.getId() <= 0) {
             throw new ExpenseException("Invalid expense ID");
         }
@@ -89,7 +82,6 @@ public class ExpenseServiceImpl implements ExpenseService {
         if (expenseUpdate.getExpenseDate() == null) {
             throw new ExpenseException("Expense date is required");
         }
-        // Validate các trường mới
         if (expenseUpdate.getPaymentMethod() == null || expenseUpdate.getPaymentMethod().trim().isEmpty()) {
             throw new ExpenseException("Payment method is required");
         }
@@ -98,17 +90,16 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public void deleteExpense(int idExpense) {
-    // Kiểm tra ID hợp lệ
+    //kiểm tra ID hợp lệ
         if (idExpense <= 0) {
             throw new ExpenseException("Invalid expense ID: ID must be positive");
         }
         try {
-            // Gọi repository để xóa
+            // gọi repository để xóa
             expenseRepo.delete(idExpense);
         } catch (ExpenseException e) {
-            // Lỗi từ repository (như không tìm thấy chi tiêu)
-            System.out.println("Error deleting expense: " + e.getMessage());
-            throw e; // Ném lại để Servlet xử lý status code
+            //lỗi từ repository (như không tìm thấy chi tiêu)
+            throw new ExpenseException("Failed to delete expense: " + e.getMessage());
         }
     }
 

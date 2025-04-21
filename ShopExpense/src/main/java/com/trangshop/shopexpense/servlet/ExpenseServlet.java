@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 import static com.mysql.cj.conf.PropertyKey.logger;
 
 
-//url test:  Http method:Get  http://localhost:8080/kieutrangshop/expenses?page=2&size=10
 //api lấy tất cả expense, có hỗ trợ phân trang với page size đc truyền từ fe
 @WebServlet("/expenses/*")
 public class ExpenseServlet extends HttpServlet {
@@ -40,43 +39,18 @@ public class ExpenseServlet extends HttpServlet {
 
     //get api method
     //xử lý các HTTP GET request tới /expenses
+    //url test:  Http method:Get  http://localhost:8080/kieutrangshop/expenses?page=2&size=10
+    //url test:  Http method:Get  http://localhost:8080/kieutrangshop/expenses/2
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        // set header response là json,cho postman,browser biết kiểu dl trả về là json
-        resp.setContentType("application/json");
-        //response đc mã hóa hỗ trợ tiếng vịt
-        resp.setCharacterEncoding("UTF-8");
-
+        httpServletResponseHandle(req,resp);
         try {
             String pathInfo = req.getPathInfo();
             if (pathInfo != null && pathInfo.length() > 1) {
-                // Xử lý GET /expenses/{id}
-                String expenseId = pathInfo.substring(1);
-                int id = Integer.parseInt(expenseId); // Service sẽ xử lý lỗi ID
-                Expense expense = expenseService.getExpenseById(id);
-                resp.setStatus(HttpServletResponse.SC_OK);
-                resp.getWriter().write(gson.toJson(expense));
+                getExpenseById(pathInfo,resp);
             } else {
-                // đọc tham số phân trang từ query
-                //set mặc định trước,nếu api truyền về ko có page size,thì mặc định lấy 10 raw expense đầu tiên
-                int page = 1;
-                int size = 10;
-                //lấy và xử lý tham số, set mặc định nếu không hợp lệ
-                    if (req.getParameter("page") != null) {
-                        page = Integer.parseInt(req.getParameter("page"));
-                        if (page < 1) page = 1; // Set mặc định nếu page < 1
-                    }
-                    if (req.getParameter("size") != null) {
-                        size = Integer.parseInt(req.getParameter("size"));
-                        if (size < 1) size = 10; // Set mặc định nếu size < 1
-                    }
-                // gọi service lấy danh sách phân trang
-                List<Expense> expenses = expenseService.getAllExpenses(page, size);
-                //set status cho response status code  cs_ok = 200
-                resp.setStatus(HttpServletResponse.SC_OK);
-                resp.getWriter() //ghi chuỗi json vào servlet response
-                        .write(gson.toJson(expenses)); //chuyển list expense thành chuỗi dạng json
+                getPageExpense(req,resp);
             }
         } catch (Exception e) {
             ServletErrorHandler.handleException(resp,e);
@@ -85,11 +59,11 @@ public class ExpenseServlet extends HttpServlet {
 
     // get api method
     // thêm chi tiêu mới /expenses
+    //url test:  Http method:Post  http://localhost:8080/kieutrangshop/expenses
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
+        httpServletResponseHandle(req,resp);
         try {
             //đọc JSON từ request body
             //req.getReader() sẽ trả về BufferedReader dạng một luồng văn bản
@@ -106,12 +80,11 @@ public class ExpenseServlet extends HttpServlet {
         }
     }
 
+    //url test:  Http method:Put  http://localhost:8080/kieutrangshop/expenses
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-
+        httpServletResponseHandle(req,resp);
         try {
             // lấy ID từ URL ( /expenses/1 -> "1")
             String pathInfo = req.getPathInfo();
@@ -145,12 +118,11 @@ public class ExpenseServlet extends HttpServlet {
     }
 
 
+    //url test:  Http method:Delete  http://localhost:8080/kieutrangshop/expenses
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-
+        httpServletResponseHandle(req,resp);
         try {
             //lấy ID từ URL
             String pathInfo = req.getPathInfo();
@@ -162,5 +134,49 @@ public class ExpenseServlet extends HttpServlet {
         } catch (Exception e) {
             ServletErrorHandler.handleException(resp,e);
         }
+    }
+
+
+
+    //get một danh sách expense bằng page và size
+    public void getPageExpense(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException{
+        // đọc tham số phân trang từ query
+        //set mặc định trước,nếu api truyền về ko có page size,thì mặc định lấy 10 raw expense đầu tiên
+        int page = 1;
+        int size = 10;
+        //lấy và xử lý tham số, set mặc định nếu không hợp lệ
+        if (req.getParameter("page") != null) {
+            page = Integer.parseInt(req.getParameter("page"));
+            if (page < 1) page = 1; // Set mặc định nếu page < 1
+        }
+        if (req.getParameter("size") != null) {
+            size = Integer.parseInt(req.getParameter("size"));
+            if (size < 1) size = 10; // Set mặc định nếu size < 1
+        }
+        // gọi service lấy danh sách phân trang
+        List<Expense> expenses = expenseService.getAllExpenses(page, size);
+        //set status cho response status code  cs_ok = 200
+        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.getWriter() //ghi chuỗi json vào servlet response
+                .write(gson.toJson(expenses)); //chuyển list expense thành chuỗi dạng json
+    }
+
+    //get một expense với id
+    public void getExpenseById(String pathInfo,HttpServletResponse resp)
+            throws IOException {
+        //xử lý GET /expenses/{id}
+        String expenseId = pathInfo.substring(1);
+        int id = Integer.parseInt(expenseId);
+        Expense expense = expenseService.getExpenseById(id);
+        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.getWriter().write(gson.toJson(expense));
+    }
+
+    public void httpServletResponseHandle(HttpServletRequest req, HttpServletResponse resp){
+        // set header response là json,cho postman,browser biết kiểu dl trả về là json
+        resp.setContentType("application/json");
+        //response đc mã hóa hỗ trợ tiếng vịt
+        resp.setCharacterEncoding("UTF-8");
     }
 }
