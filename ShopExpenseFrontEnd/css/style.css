@@ -1,0 +1,52 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #e5e7eb;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #2563eb;
+    color: white;
+    font-weight: 600;
+}
+
+td {
+    background-color: #ffffff;
+}
+
+tr:nth-child(even) td {
+    background-color: #f8fafc;
+}
+
+tr:hover td {
+    background-color: #e0f2fe;
+    transition: background-color 0.3s ease;
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    .container {
+        padding: 12px;
+    }
+
+    button {
+        padding: 8px 16px;
+    }
+}
