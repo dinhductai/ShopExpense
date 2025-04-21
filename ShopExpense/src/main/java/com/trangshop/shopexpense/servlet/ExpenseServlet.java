@@ -65,16 +65,7 @@ public class ExpenseServlet extends HttpServlet {
             throws ServletException, IOException {
         httpServletResponseHandle(req,resp);
         try {
-            //đọc JSON từ request body
-            //req.getReader() sẽ trả về BufferedReader dạng một luồng văn bản
-            BufferedReader reader = req.getReader();
-//            chuyển đổi (deserialize) dữ liệu JSON từ BufferedReader thành một đối tượng Java, ở đây là Expense
-            Expense expenseUpdate = gson.fromJson(reader, Expense.class);
-            // gọi service để thêm chi tiêu
-            Expense createdExpense = expenseService.createExpense(expenseUpdate);
-            //trả về chi tiêu đã tạo
-            resp.setStatus(HttpServletResponse.SC_CREATED); // HTTP 201
-            resp.getWriter().write(gson.toJson(createdExpense));
+           postExpense(req,resp);
         } catch (Exception e) {
             ServletErrorHandler.handleException(resp,e);
         }
@@ -86,35 +77,10 @@ public class ExpenseServlet extends HttpServlet {
             throws ServletException, IOException {
         httpServletResponseHandle(req,resp);
         try {
-            // lấy ID từ URL ( /expenses/1 -> "1")
-            String pathInfo = req.getPathInfo();
-            if (pathInfo == null || pathInfo.length() <= 1) {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write(gson.toJson("Error: Missing expense ID"));
-                return;
-            }
-            String expenseId = pathInfo.substring(1); //bỏ dấu "/" đầu tiên
-            int id = Integer.parseInt(expenseId);
-            //đọc JSON từ request body
-            BufferedReader reader = req.getReader();
-            Expense expenseUpdate = gson.fromJson(reader, Expense.class);
-            //gán id từ url vào expenseUpdate
-            expenseUpdate.setId(id);
-            // validate dữ liệu đầu vào
-            if (expenseUpdate.getAmount() <= 0 || expenseUpdate.getCategoryId() <= 0) {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write(gson.toJson("Error: Invalid amount or category"));
-                return;
-            }
-            // gọi service để cập nhật chi tiêu
-            Expense updatedExpense = expenseService.updateExpense(expenseUpdate);
-            // trả về chi tiêu đã cập nhật
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getWriter().write(gson.toJson(updatedExpense));
+            putExpenseById(req,resp);
         } catch (ExpenseException e) {
             ServletErrorHandler.handleException(resp,e);
         }
-
     }
 
 
@@ -124,13 +90,7 @@ public class ExpenseServlet extends HttpServlet {
             throws ServletException, IOException {
         httpServletResponseHandle(req,resp);
         try {
-            //lấy ID từ URL
-            String pathInfo = req.getPathInfo();
-            String expenseId = pathInfo.substring(1);
-            int id = Integer.parseInt(expenseId); //service sẽ xử lý lỗi ID không hợp lệ
-            // gọi service để xóa chi tiêu
-            expenseService.deleteExpense(id);
-            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            deleteExpenseById(req,resp);
         } catch (Exception e) {
             ServletErrorHandler.handleException(resp,e);
         }
@@ -172,6 +132,63 @@ public class ExpenseServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_OK);
         resp.getWriter().write(gson.toJson(expense));
     }
+
+    //post một expense mới
+    public void postExpense(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException{
+        //đọc JSON từ request body
+        //req.getReader() sẽ trả về BufferedReader dạng một luồng văn bản
+        BufferedReader reader = req.getReader();
+//            chuyển đổi (deserialize) dữ liệu JSON từ BufferedReader thành một đối tượng Java, ở đây là Expense
+        Expense expenseUpdate = gson.fromJson(reader, Expense.class);
+        // gọi service để thêm chi tiêu
+        Expense createdExpense = expenseService.createExpense(expenseUpdate);
+        //trả về chi tiêu đã tạo
+        resp.setStatus(HttpServletResponse.SC_CREATED); // HTTP 201
+        resp.getWriter().write(gson.toJson(createdExpense));
+    }
+
+    //put một expense với id
+    public void putExpenseById(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+        // lấy ID từ URL ( /expenses/1 -> "1")
+        String pathInfo = req.getPathInfo();
+        if (pathInfo == null || pathInfo.length() <= 1) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write(gson.toJson("Error: Missing expense ID"));
+            return;
+        }
+        String expenseId = pathInfo.substring(1); //bỏ dấu "/" đầu tiên
+        int id = Integer.parseInt(expenseId);
+        //đọc JSON từ request body
+        BufferedReader reader = req.getReader();
+        Expense expenseUpdate = gson.fromJson(reader, Expense.class);
+        //gán id từ url vào expenseUpdate
+        expenseUpdate.setId(id);
+        // validate dữ liệu đầu vào
+        if (expenseUpdate.getAmount() <= 0 || expenseUpdate.getCategoryId() <= 0) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write(gson.toJson("Error: Invalid amount or category"));
+            return;
+        }
+        // gọi service để cập nhật chi tiêu
+        Expense updatedExpense = expenseService.updateExpense(expenseUpdate);
+        // trả về chi tiêu đã cập nhật
+        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.getWriter().write(gson.toJson(updatedExpense));
+    }
+
+    //delete một expense với id
+    public void deleteExpenseById(HttpServletRequest req, HttpServletResponse resp){
+        //lấy ID từ URL
+        String pathInfo = req.getPathInfo();
+        String expenseId = pathInfo.substring(1);
+        int id = Integer.parseInt(expenseId); //service sẽ xử lý lỗi ID không hợp lệ
+        // gọi service để xóa chi tiêu
+        expenseService.deleteExpense(id);
+        resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+    }
+
 
     public void httpServletResponseHandle(HttpServletRequest req, HttpServletResponse resp){
         // set header response là json,cho postman,browser biết kiểu dl trả về là json
