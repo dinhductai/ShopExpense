@@ -4,26 +4,23 @@ package com.trangshop.shopexpense.model;
 //lớp entity,đại diện cho bảng user trong db
 //chịu trách nhiệm thao tác trên bảng user
 public class User {
-    private Integer id;
+    private int id;
     private String username;
     private String password;
-    private String email;
+    private String role;
 
-    public User() {
-    }
-
-    public User(Integer id, String username, String password, String email) {
+    public User(int id, String username, String password, String role) {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.email = email;
+        this.role = role;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -43,11 +40,11 @@ public class User {
         this.password = password;
     }
 
-    public String getEmail() {
-        return email;
+    public String getRole() {
+        return role;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setRole(String role) {
+        this.role = role;
     }
 }

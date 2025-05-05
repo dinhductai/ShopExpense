@@ -1,4 +1,4 @@
-package com.trangshop.shopexpense.repository;
+package com.trangshop.shopexpense.service.repository;
 
 import com.trangshop.shopexpense.model.Expense;
 

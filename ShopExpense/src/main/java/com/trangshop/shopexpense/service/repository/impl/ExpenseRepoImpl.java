@@ -1,11 +1,10 @@
-package com.trangshop.shopexpense.repository.impl;
+package com.trangshop.shopexpense.service.repository.impl;
 
-import com.mysql.cj.jdbc.ConnectionWrapper;
 import com.trangshop.shopexpense.exception.ExpenseException;
 import com.trangshop.shopexpense.mapper.ExpenseMapper;
 import com.trangshop.shopexpense.model.Expense;
-import com.trangshop.shopexpense.repository.ExpenseRepo;
-import com.trangshop.shopexpense.repository.query.ExpenseQuery;
+import com.trangshop.shopexpense.service.repository.ExpenseRepo;
+import com.trangshop.shopexpense.service.repository.query.ExpenseQuery;
 import com.trangshop.shopexpense.service.DatabaseConnectService;
 import com.trangshop.shopexpense.service.impl.DatabaseConnectServiceImpl;
 
@@ -14,7 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ExpenseRepoImpl implements ExpenseRepo {

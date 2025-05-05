@@ -10,7 +10,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
@@ -39,7 +38,11 @@ public class ExpenseServlet extends HttpServlet {
 
     //get api method
     //xử lý các HTTP GET request tới /expenses
-    //url test:  Http method:Get  http://localhost:8080/kieutrangshop/expenses?page=2&size=10
+    //lấy list hỗ trợ phân trang
+    //url test:  Http method:Get http://localhost:8080/kieutrangshop/expenses
+    //  hoặc http://localhost:8080/kieutrangshop/expenses?page=2&size=10
+
+    //lấy 1 expense
     //url test:  Http method:Get  http://localhost:8080/kieutrangshop/expenses/2
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)

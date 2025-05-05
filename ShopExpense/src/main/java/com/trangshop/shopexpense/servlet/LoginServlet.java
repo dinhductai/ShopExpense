@@ -9,44 +9,41 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
-//POST   http://localhost:8080/kieutrangshop/login?username=admin&password=admin
-//api đăng nhập với username và password
-@WebServlet("/login")
+@WebServlet({"/login",""})
 public class LoginServlet extends HttpServlet {
     private UserService userService;
-    private Gson gson;
 
     @Override
     public void init() throws ServletException {
         this.userService = new UserServiceImpl();
-        this.gson = new Gson();
+
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
         User user = userService.login(username, password);
-        Map<String, Object> response = new HashMap<>();
         if (user != null) {
-            response.put("success", true);
-            response.put("message", "Login successful");
-            resp.setStatus(HttpServletResponse.SC_OK);
+            HttpSession session = req.getSession();
+            session.setAttribute("loggedIn", true);
+            session.setAttribute("user", user);
+            session.setAttribute("role", user.getRole()); // Lưu role vào session để phân quyền
+            resp.sendRedirect(req.getContextPath() + "/orders");
         } else {
-            response.put("success", false);
-            response.put("message", "Invalid username or password");
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            req.setAttribute("error", "Invalid username or password!");
+            req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
         }
-
-        resp.getWriter().write(gson.toJson(response));
     }
 }

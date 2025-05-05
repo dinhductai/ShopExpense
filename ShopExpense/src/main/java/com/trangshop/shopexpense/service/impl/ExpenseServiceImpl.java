@@ -2,8 +2,8 @@ package com.trangshop.shopexpense.service.impl;
 
 import com.trangshop.shopexpense.exception.ExpenseException;
 import com.trangshop.shopexpense.model.Expense;
-import com.trangshop.shopexpense.repository.ExpenseRepo;
-import com.trangshop.shopexpense.repository.impl.ExpenseRepoImpl;
+import com.trangshop.shopexpense.service.repository.ExpenseRepo;
+import com.trangshop.shopexpense.service.repository.impl.ExpenseRepoImpl;
 import com.trangshop.shopexpense.service.ExpenseService;
 
 import java.util.List;

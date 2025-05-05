@@ -1,4 +1,4 @@
-package com.trangshop.shopexpense.repository.query;
+package com.trangshop.shopexpense.service.repository.query;
 
 public class ExpenseQuery {
     public final String FIND_ALL_EXPENSE = "select * from expenses limit ? offset ?";
