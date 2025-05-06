@@ -18,3 +18,48 @@
 .btn-primary:hover {
     background-color: #0056b3;
 }
+
+.card {
+    border-radius: 10px;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    border-color: #007bff;
+}
+
+.alert {
+    font-size: 0.9rem;
+}
+
+.btn-primary, .btn-success, .btn-warning, .btn-danger, .btn-info, .btn-secondary {
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
