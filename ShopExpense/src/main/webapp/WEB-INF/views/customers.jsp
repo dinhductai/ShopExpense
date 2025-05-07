@@ -11,19 +11,12 @@
 </head>
 <body class="bg-light">
 <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-primary">Customer Manager</h1>
-        <div>
-            <a href="${pageContext.request.contextPath}/customers?action=add" class="btn btn-success me-2">Add New Customer</a>
-            <a href="${pageContext.request.contextPath}/products" class="btn btn-info me-2">View Products</a>
-            <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger">Logout</a>
-        </div>
-    </div>
-    <c:if test="${not empty error}">
-        <div class="alert alert-danger" role="alert">${error}</div>
-    </c:if>
+    <h1 class="text-primary mb-4">Customer Manager</h1>
     <div class="card shadow">
         <div class="card-body">
+            <div class="d-flex justify-content-end mb-3">
+                <a href="${pageContext.request.contextPath}/customers?action=add" class="btn btn-success">Add New Customer</a>
+            </div>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover">
                     <thead class="table-primary">

@@ -10,7 +10,7 @@
 </head>
 <body class="bg-light">
 <div class="container mt-5">
-    <h1 class="text-primary mb-4">Add New Product</h1>
+    <h1 class="text-primary mb-4">Add Product</h1>
     <div class="card shadow">
         <div class="card-body">
             <form action="${pageContext.request.contextPath}/products" method="POST">

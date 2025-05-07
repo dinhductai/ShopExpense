@@ -11,16 +11,12 @@
 </head>
 <body class="bg-light">
 <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-primary">Product Manager</h1>
-        <div>
-            <a href="${pageContext.request.contextPath}/products?action=add" class="btn btn-success me-2">Add New Product</a>
-            <a href="${pageContext.request.contextPath}/orders" class="btn btn-info me-2">View Orders</a>
-            <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger">Logout</a>
-        </div>
-    </div>
+    <h1 class="text-primary mb-4">Product Manager</h1>
     <div class="card shadow">
         <div class="card-body">
+            <div class="d-flex justify-content-end mb-3">
+                <a href="${pageContext.request.contextPath}/products?action=add" class="btn btn-success">Add New Product</a>
+            </div>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover">
                     <thead class="table-primary">

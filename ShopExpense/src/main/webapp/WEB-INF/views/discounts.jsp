@@ -11,23 +11,7 @@
 </head>
 <body class="bg-light">
 <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-primary">Discount Manager</h1>
-        <div>
-            <a href="${pageContext.request.contextPath}/products" class="btn btn-info me-2">View Products</a>
-            <a href="${pageContext.request.contextPath}/customers" class="btn btn-info me-2">View Customers</a>
-            <a href="${pageContext.request.contextPath}/orders" class="btn btn-info me-2">View Orders</a>
-            <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger">Logout</a>
-        </div>
-    </div>
-    <c:if test="${not empty error}">
-        <div class="alert alert-danger" role="alert">${error}</div>
-        <c:remove var="error" scope="session"/>
-    </c:if>
-    <c:if test="${not empty success}">
-        <div class="alert alert-success" role="alert">${success}</div>
-        <c:remove var="success" scope="session"/>
-    </c:if>
+    <h1 class="text-primary mb-4">Discount Manager</h1>
     <div class="card shadow mb-4">
         <div class="card-body">
             <form action="${pageContext.request.contextPath}/discounts" method="GET" class="row g-3">

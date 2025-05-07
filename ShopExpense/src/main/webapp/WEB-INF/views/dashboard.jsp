@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopexpense - Admin Dashboard</title>
+    <title>ShopExpense - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,11 +15,9 @@
         }
 
         body {
-            display: flex;
             min-height: 100vh;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 250px;
             background-color: #2c3e50;
@@ -47,10 +46,10 @@
             background-color: #34495e;
         }
 
-        /* Main Content */
         .main-content {
             margin-left: 250px;
-            flex: 1;
+            padding: 20px;
+            min-height: 100vh;
             background-image: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
@@ -60,33 +59,24 @@
             align-items: center;
             color: white;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-            padding: 20px;
         }
 
-        .dashboard-text {
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: calc(100% - 250px);
+            margin-left: 250px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
             text-align: center;
-            max-width: 600px;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 30px;
-            border-radius: 10px;
-        }
-
-        .dashboard-text h1 {
-            font-size: 36px;
-            margin-bottom: 20px;
-        }
-
-        .dashboard-text p {
-            font-size: 18px;
-            line-height: 1.6;
+            padding: 10px 0;
         }
     </style>
 </head>
 <body>
 <%
-    // Kiểm tra session và vai trò
     String role = (String) session.getAttribute("role");
-    if (session.getAttribute("user") == null || !"MANAGER".equals(role)) {
+    if (session.getAttribute("user") == null || !"ADMIN".equals(role)) {
         response.sendRedirect("login.jsp");
         return;
     }
@@ -94,27 +84,25 @@
 
 <!-- Sidebar -->
 <div class="sidebar">
-    <h2>Shopexpense Admin</h2>
-    <a href="products">Manage Products</a>
-    <a href="discounts">Manage Discounts</a>
-    <a href="customers">Manage Customers</a>
-    <a href="orders">Manage Orders</a>
-    <a href="order-details">Manage Order Details</a>
-    <a href="users">Manage Users</a>
-    <a href="logout">Logout</a>
+    <h2>ShopExpense Admin</h2>
+    <a href="${pageContext.request.contextPath}/products" class="btn btn-link text-white w-100 text-start">Manage Products</a>
+    <a href="${pageContext.request.contextPath}/discounts" class="btn btn-link text-white w-100 text-start">Manage Discounts</a>
+    <a href="${pageContext.request.contextPath}/customers" class="btn btn-link text-white w-100 text-start">Manage Users</a>
+    <a href="${pageContext.request.contextPath}/orders" class="btn btn-link text-white w-100 text-start">Manage Orders</a>
+    <a href="${pageContext.request.contextPath}/revenue" class="btn btn-link text-white w-100 text-start">Manage Revenue</a>
+    <a href="${pageContext.request.contextPath}/api/logout" class="btn btn-link text-white w-100 text-start">Logout</a>
 </div>
 
 <!-- Main Content -->
 <div class="main-content">
-    <div class="dashboard-text">
-        <h1>Welcome to Shopexpense</h1>
-        <p>
-            Shopexpense is your one-stop destination for cutting-edge technology products!
-            Explore our wide range of smartphones, accessories, and more.
-            As an admin, you can manage products, discounts, customers, orders, and users
-            with ease from this dashboard.
-        </p>
-    </div>
+    <!-- Không có nội dung chi tiết, chỉ nền ảnh -->
 </div>
+
+<!-- Footer -->
+<div class="footer">
+    <p>© 2025 ShopExpense. All rights reserved. Contact us at support@shopexpense.com</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

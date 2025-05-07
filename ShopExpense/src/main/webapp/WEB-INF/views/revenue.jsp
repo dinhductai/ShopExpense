@@ -11,16 +11,7 @@
 </head>
 <body class="bg-light">
 <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-primary">Revenue Manager</h1>
-        <div>
-            <a href="${pageContext.request.contextPath}/products" class="btn btn-info me-2">View Products</a>
-            <a href="${pageContext.request.contextPath}/orders" class="btn btn-info me-2">View Orders</a>
-            <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger">Logout</a>
-        </div>
-    </div>
-
-    <!-- Form lọc theo khoảng thời gian -->
+    <h1 class="text-primary mb-4">Revenue Manager</h1>
     <div class="card shadow mb-4">
         <div class="card-body">
             <form action="${pageContext.request.contextPath}/revenue" method="POST" class="row g-3">
@@ -38,8 +29,6 @@
             </form>
         </div>
     </div>
-
-    <!-- Tabs cho các loại doanh thu -->
     <ul class="nav nav-tabs mb-4" id="revenueTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="by-time-tab" data-bs-toggle="tab" data-bs-target="#by-time" type="button" role="tab">By Time</button>
@@ -51,14 +40,11 @@
             <button class="nav-link" id="by-customer-tab" data-bs-toggle="tab" data-bs-target="#by-customer" type="button" role="tab">By Customer</button>
         </li>
     </ul>
-
     <div class="tab-content" id="revenueTabContent">
-        <!-- Doanh thu theo thời gian -->
         <div class="tab-pane fade show active" id="by-time" role="tabpanel">
             <div class="card shadow">
                 <div class="card-body">
                     <h3>Revenue by Time</h3>
-                    <!-- Doanh thu theo ngày -->
                     <h5>By Day</h5>
                     <c:if test="${empty revenueByDay}">
                         <div class="alert alert-info">No revenue data available for this period.</div>
@@ -83,8 +69,6 @@
                             </table>
                         </div>
                     </c:if>
-
-                    <!-- Doanh thu theo tháng -->
                     <h5>By Month</h5>
                     <c:if test="${empty revenueByMonth}">
                         <div class="alert alert-info">No revenue data available for this period.</div>
@@ -109,8 +93,6 @@
                             </table>
                         </div>
                     </c:if>
-
-                    <!-- Doanh thu theo năm -->
                     <h5>By Year</h5>
                     <c:if test="${empty revenueByYear}">
                         <div class="alert alert-info">No revenue data available for this period.</div>
@@ -138,8 +120,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Doanh thu theo sản phẩm -->
         <div class="tab-pane fade" id="by-product" role="tabpanel">
             <div class="card shadow">
                 <div class="card-body">
@@ -170,8 +150,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Doanh thu theo khách hàng -->
         <div class="tab-pane fade" id="by-customer" role="tabpanel">
             <div class="card shadow">
                 <div class="card-body">

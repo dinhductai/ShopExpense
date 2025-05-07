@@ -36,8 +36,8 @@ public class RevenueServlet extends HttpServlet {
         }
 
         String role = (String) session.getAttribute("role");
-        if (!"MANAGER".equals(role)) {
-            response.sendRedirect(request.getContextPath() + "/products");
+        if (!"ADMIN".equals(role)) {
+            response.sendRedirect(request.getContextPath() + "/revenue");
             return;
         }
 

@@ -3,7 +3,6 @@ package com.trangshop.shopexpense.servlet;
 import com.trangshop.shopexpense.model.User;
 import com.trangshop.shopexpense.service.UserService;
 import com.trangshop.shopexpense.service.impl.UserServiceImpl;
-import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,16 +11,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.HashMap;
 
-@WebServlet({"/login",""})
+@WebServlet({"/login", ""})
 public class LoginServlet extends HttpServlet {
     private UserService userService;
 
     @Override
     public void init() throws ServletException {
         this.userService = new UserServiceImpl();
-
     }
 
     @Override
@@ -39,8 +36,13 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = req.getSession();
             session.setAttribute("loggedIn", true);
             session.setAttribute("user", user);
-            session.setAttribute("role", user.getRole()); // Lưu role vào session để phân quyền
-            resp.sendRedirect(req.getContextPath() + "/dashboard");
+            session.setAttribute("role", user.getRole());
+            if ("ADMIN".equals(user.getRole())) {
+                resp.sendRedirect(req.getContextPath() + "/dashboard");
+            } else {
+                req.setAttribute("error", "Access denied. Admin role required!");
+                req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
+            }
         } else {
             req.setAttribute("error", "Invalid username or password!");
             req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);

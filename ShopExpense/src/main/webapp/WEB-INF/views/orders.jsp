@@ -11,18 +11,7 @@
 </head>
 <body class="bg-light">
 <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-primary">Order Manager</h1>
-        <div>
-            <a href="${pageContext.request.contextPath}/products" class="btn btn-info me-2">View Products</a>
-            <a href="${pageContext.request.contextPath}/customers" class="btn btn-info me-2">View Customers</a>
-            <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger">Logout</a>
-        </div>
-    </div>
-    <c:if test="${not empty error}">
-        <div class="alert alert-danger" role="alert">${error}</div>
-    </c:if>
-    <!-- Form lọc -->
+    <h1 class="text-primary mb-4">Order Manager</h1>
     <div class="card shadow mb-4">
         <div class="card-body">
             <form action="${pageContext.request.contextPath}/orders" method="POST" class="row g-3">

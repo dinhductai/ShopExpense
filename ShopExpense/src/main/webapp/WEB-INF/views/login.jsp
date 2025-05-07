@@ -15,11 +15,9 @@
             <div class="card shadow">
                 <div class="card-body p-4">
                     <h2 class="card-title text-center mb-4 text-primary">Login to ShopExpense</h2>
-                    <% if (request.getAttribute("error") != null) { %>
-                    <div class="alert alert-danger" role="alert">
-                        <%= request.getAttribute("error") %>
-                    </div>
-                    <% } %>
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-danger" role="alert">${error}</div>
+                    </c:if>
                     <form action="${pageContext.request.contextPath}/login" method="POST">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
