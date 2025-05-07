@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         User user = userRepo.findByUsernameAndPassword(username, hashedPassword);
-        if (user != null && (user.getRole().equals("MANAGER") || user.getRole().equals("EMPLOYEE"))) {
+        if (user != null && (user.getRole().equals("ADMIN") || user.getRole().equals("EMPLOYEE"))) {
             return user;
         }
         return null;

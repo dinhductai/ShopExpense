@@ -40,7 +40,7 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("loggedIn", true);
             session.setAttribute("user", user);
             session.setAttribute("role", user.getRole()); // Lưu role vào session để phân quyền
-            resp.sendRedirect(req.getContextPath() + "/products");
+            resp.sendRedirect(req.getContextPath() + "/dashboard");
         } else {
             req.setAttribute("error", "Invalid username or password!");
             req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
